@@ -2,7 +2,8 @@ import pandas as pd
 from sklearn import model_selection
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, average_precision_score, \
+    recall_score
 from sklearn.model_selection import GridSearchCV
 from sklearn import model_selection
 from sklearn.neighbors import KNeighborsClassifier
@@ -21,10 +22,10 @@ def read_data(filename):
 
     return pd.read_csv(filename)
 
-def cross_validation(estimator, x_train, y_train, k_folds=10, score_type='f1_weighted'):
+def cross_validation(estimator, x_train, y_train, k_folds=10, score_type='accuracy'):
     """
-	This function will apply k-folds cross validation to calculate the average
-	f1_weighted score in order to select the machine learning algorithm with
+	This function will apply k-folds cross validation to calculate the
+	algorithm score in order to select the machine learning algorithm with
     highest score.
 
 	Parameters
@@ -43,7 +44,7 @@ def cross_validation(estimator, x_train, y_train, k_folds=10, score_type='f1_wei
 	Returns
 	-------
 	estimator_score: list of floats
-		This list contains the best cross validation f1 scores of machine
+		This list contains the best cross validation scores of machine
         learning algorithms
 	estimator_std: list of floats
 		This list contains the cross validation standard deviations of machine
@@ -55,21 +56,21 @@ def cross_validation(estimator, x_train, y_train, k_folds=10, score_type='f1_wei
 
     # k-fold cross validation
     # print("Start "+str(k_folds)+"-folds cross validation...")
-    f1_score = model_selection.cross_val_score(estimator, x_train, y_train, cv=kfold, scoring=score_type, n_jobs=-1)
+    score = model_selection.cross_val_score(estimator, x_train, y_train, cv=kfold, scoring=score_type, n_jobs=-1)
     # append results to the return lists
-    estimator_score = f1_score.mean()
-    estimator_std = f1_score.std()
+    estimator_score = score.mean()
+    estimator_std = score.std()
     # print("End cross validation")
 
     return estimator_score, estimator_std
 
-def grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test, k_folds=10, score_type='f1_weighted'):
+def grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test, k_folds=10, score_type='accuracy'):
     """
 	This function will apply grid search to search over specified parameter
     values for an estimator to find the optimal parameters for a machine
     learning algorithm.
 	Also, this function will apply k-folds cross validation to calculate the
-    average f1_weighted score in order to select the machine learning algorithm
+    algorithm score in order to select the machine learning algorithm
     with highest score.
 
 	Parameters
@@ -100,7 +101,8 @@ def grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test, k_f
         This list contains the evaluation score on the test data
    """
 
-    model_names, model_scores, model_std, test_scores = [], [], [], []  # return list
+    model_names, model_scores, model_std, accuracy_scores, precision_scores, recall_scores, f1_scores = \
+        [], [], [], [], [], [], []  # return list
     kfold = model_selection.KFold(n_splits=k_folds, shuffle=True)
     # kfold = model_selection.StratifiedKFold(n_splits=k_folds, shuffle=True)
     for name, model, parameters in clf_list:
@@ -112,18 +114,24 @@ def grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test, k_f
         best_est = search.best_estimator_  # estimator with the best parameters
 
         # k-fold cross validation
-        f1_mean, f1_std = cross_validation(best_est, x_train, y_train, k_folds, score_type)
+        score_mean, score_std = cross_validation(best_est, x_train, y_train, k_folds, score_type)
         # append results to the return lists
         model_names.append(name)
-        model_scores.append(f1_mean)
-        model_std.append(f1_std)
+        model_scores.append(score_mean)
+        model_std.append(score_std)
 
+        # model evaluation
         y_pred = best_est.predict(x_test)
-        test_score = f1_score(y_test, y_pred, average='weighted')
-        test_scores.append(test_score)
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = average_precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+        accuracy_scores.append(accuracy)
+        precision_scores.append(precision)
+        recall_scores.append(recall)
+        f1_scores.append(f1)
 
-    return model_names, model_scores, model_std, test_scores
-
+    return model_names, model_scores, model_std, accuracy_scores, precision_scores, recall_scores, f1_scores
 
 
 df = read_data('data/dataset.csv')
@@ -133,7 +141,7 @@ Y = df.target # target
 
 # Split out dataset
 x_train, x_test , y_train , y_test = train_test_split (X, Y, test_size =0.2) # test = 20%, train = 80%
-
+"""
 clf_list = [("logistic_regression", LogisticRegression(), {'C': np.logspace(-4, 4, 20), \
                                                            'max_iter': [100, 200, 300, 400, 500]}),
             ("k-nn", KNeighborsClassifier(), {'n_neighbors': np.arange(1, 25), \
@@ -148,13 +156,20 @@ clf_list = [("logistic_regression", LogisticRegression(), {'C': np.logspace(-4, 
             ("svc", SVC(), {'C': [0.1, 1, 10, 100], \
                             'gamma': [0.01, 0.1, 1], \
                             'kernel': ['rbf', 'linear', 'sigmoid']})]
+"""
+clf_list = [("random_forest", RandomForestClassifier(), {'n_estimators': [250,500,750,1000], \
+                                                         'criterion': ['gini','entropy'], \
+                                                         'max_features':['auto','sqrt','log2']})]
 
-
-model_names, model_scores, model_std, test_scores = grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test)
-print(model_names)
-print(model_scores)
-print(model_std)
-print(test_scores)
+model_names, model_scores, model_std, accuracy_scores, precision_scores, recall_scores, f1_scores = \
+    grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test)
+print('model names = ' + str(model_names))
+print('model accuracy = ' + str(model_scores))
+print('model std = ' + str(model_std))
+print('accuracy = ' + str(accuracy_scores))
+print('precission = ' + str(precision_scores))
+print('recall = ' + str(recall_scores))
+print('f1 = ' + str(f1_scores))
 
 """
 lr_clf = LogisticRegression(solver='liblinear')
