@@ -1,0 +1,43 @@
+Estimator: LogisticRegression
+Best parameters: {'C': 1, 'max_iter': 100, 'penalty': 'l2', 'solver': 'lbfgs'}
+kfold cross validation mean accuracy: 0.81
+kfold cross validation standard deviation: 0.05
+Evaluation accuracy: 0.92
+
+Estimator: kNN
+Best parameters: {'algorithm': 'auto', 'metric': 'manhattan', 'n_neighbors': 26, 'weights': 'distance'}
+kfold cross validation mean accuracy: 0.69
+kfold cross validation standard deviation: 0.08
+Evaluation accuracy: 0.78
+
+Estimator: MLP
+Best parameters: {'activation': 'identity', 'alpha': 0.0001, 'hidden_layer_sizes': (100,), 'learning_rate': 'constant', 'max_iter': 300, 'solver': 'lbfgs'}
+kfold cross validation mean accuracy: 0.82
+kfold cross validation standard deviation: 0.07
+Evaluation accuracy: 0.90
+
+Estimator: DecisionTree
+Best parameters: {'criterion': 'entropy', 'max_depth': 5, 'max_features': 'auto', 'min_samples_leaf': 9, 'min_samples_split': 8, 'splitter': 'random'}
+kfold cross validation mean accuracy: 0.73
+kfold cross validation standard deviation: 0.13
+Evaluation accuracy: 0.80
+
+Estimator: RandomForest
+Best parameters: {'criterion': 'gini', 'max_depth': None, 'max_features': 'auto', 'n_estimators': 100}
+kfold cross validation mean accuracy: 0.82
+kfold cross validation standard deviation: 0.09
+Evaluation accuracy: 0.90
+
+Estimator: SVC
+Best parameters: {'C': 10, 'gamma': 'scale', 'kernel': 'linear', 'probability': True}
+kfold cross validation mean accuracy: 0.78
+kfold cross validation standard deviation: 0.05
+Evaluation accuracy: 0.90
+
+AUC-ROC curve
+LogisticRegression: 0.98
+kNN: 0.84
+MLP: 0.97
+DecisionTree: 0.83
+RandomForest: 0.95
+SVC: 0.97
