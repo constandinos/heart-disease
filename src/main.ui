@@ -345,12 +345,12 @@
          </property>
          <item>
           <property name="text">
-           <string>&gt; 120</string>
+           <string>&lt;= 120</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>&lt;= 120</string>
+           <string>&gt; 120</string>
           </property>
          </item>
         </widget>
@@ -400,12 +400,12 @@
          </property>
          <item>
           <property name="text">
-           <string>Yes</string>
+           <string>No</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>No</string>
+           <string>Yes</string>
           </property>
          </item>
         </widget>

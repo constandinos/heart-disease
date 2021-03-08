@@ -1,10 +1,20 @@
+# main.py
+#
+# This class creates a GUI for input data.
+#
+# Created by: Constandinos Demetriou, Mar 2021
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMessageBox
 import sys
 import classes.prediction as prediction
 
+
 class Ui_Form(object):
+
+    def __init__(self):
+        self.model = prediction.load_model()
 
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -324,14 +334,14 @@ class Ui_Form(object):
         self.comboBox_cp.setItemText(1, _translate("Form", "Atypical angina"))
         self.comboBox_cp.setItemText(2, _translate("Form", "Non-anginal pain"))
         self.comboBox_cp.setItemText(3, _translate("Form", "Asymptomatic"))
-        self.comboBox_fbs.setItemText(0, _translate("Form", "> 120"))
-        self.comboBox_fbs.setItemText(1, _translate("Form", "<= 120"))
+        self.comboBox_fbs.setItemText(0, _translate("Form", "<= 120"))
+        self.comboBox_fbs.setItemText(1, _translate("Form", "> 120"))
         self.comboBox_restecg.setItemText(0, _translate("Form", "Normal"))
         self.comboBox_restecg.setItemText(1, _translate("Form", "Having ST-T wave abnormality"))
         self.comboBox_restecg.setItemText(2, _translate("Form",
                                                         "Showing probable or definite left ventricular hypertrophy"))
-        self.comboBox_exang.setItemText(0, _translate("Form", "Yes"))
-        self.comboBox_exang.setItemText(1, _translate("Form", "No"))
+        self.comboBox_exang.setItemText(0, _translate("Form", "No"))
+        self.comboBox_exang.setItemText(1, _translate("Form", "Yes"))
         self.comboBox_slope.setItemText(0, _translate("Form", "Upsloping"))
         self.comboBox_slope.setItemText(1, _translate("Form", "Flat"))
         self.comboBox_slope.setItemText(2, _translate("Form", "Downsloping"))
@@ -408,10 +418,11 @@ class Ui_Form(object):
         # serum cholestoral
         chol = self.lineEdit_chol.text()
         # fasting blood sugar
-        if self.comboBox_fbs.currentText() == '> 120':
+        if self.comboBox_fbs.currentText() == '<= 120':
             fbs = 0
-        elif self.comboBox_fbs.currentText() == '<= 120':
+        elif self.comboBox_fbs.currentText() == '> 120':
             fbs = 1
+
         # resting electrocardiographic results
         if self.comboBox_restecg.currentText() == 'Normal':
             restecg = 0
@@ -458,7 +469,7 @@ class Ui_Form(object):
             oldpeak = float(oldpeak)
 
         # check for negative values
-        if age < 0 or trestbps < 0 or chol <0 or thalach < 0 or oldpeak < 0:
+        if age < 0 or trestbps < 0 or chol < 0 or thalach < 0 or oldpeak < 0:
             self.show_msg('Error: Some values are negative. Please give only positive values!', 'Error')
             return
         elif age > 100:
@@ -468,7 +479,7 @@ class Ui_Form(object):
 
         # make prediction
         pred = prediction.make_prediction(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope,
-                                          ca, thal)
+                                          ca, thal, self.model)
 
         # appeare prediction results
         if pred == 0:
@@ -505,6 +516,5 @@ if __name__ == "__main__":
     window = QtWidgets.QWidget()
     ui = Ui_Form()
     ui.setupUi(window)
-
     window.show()
     sys.exit(app.exec_())

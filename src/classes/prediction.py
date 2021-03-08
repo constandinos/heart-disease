@@ -1,3 +1,9 @@
+# prediction.py
+#
+# This class predicts if a patient has a heart disease.
+#
+# Created by: Constandinos Demetriou, Mar 2021
+
 import pandas as pd
 import pickle
 
@@ -58,8 +64,28 @@ def build_data(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpe
     return df
 
 
-def make_prediction(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal,
-                    filename='../model/finalized_model.sav'):
+def load_model(filename='../model/finalized_model.sav'):
+    """
+    Loads machine learning fitted model.
+
+    Parameters
+    ----------
+    filename: str
+        The directory with stored model
+
+     Returns
+	-------
+	loaded_model: estimtor
+	    Machine learning fitted model
+    """
+
+    # load model
+    loaded_model = pickle.load(open(filename, 'rb'))
+
+    return loaded_model
+
+
+def make_prediction(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal, loaded_model):
     """
     Predicts if a patient has a heart problem.
 
@@ -91,8 +117,6 @@ def make_prediction(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, 
         Number of major vessels (0-3) colored by flourosopy
     thal: int
         Thalassemia
-    filename: str
-        The directory with stored model
 
     Returns
 	-------
@@ -102,9 +126,6 @@ def make_prediction(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, 
 
     # build test data
     x_test = build_data(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal)
-
-    # load model
-    loaded_model = pickle.load(open(filename, 'rb'))
 
     # make prediction
     y_predict = loaded_model.predict(pd.DataFrame(x_test))

@@ -1,4 +1,13 @@
+# build_model.py
+#
+# This class find the best machine learning model to fit the data.
+#
+# Created by: Constandinos Demetriou, Mar 2021
+
 import pandas as pd
+import numpy as np
+from scipy import stats
+import pickle
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -10,7 +19,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
-import pickle
+
 
 def read_data(filename):
     """
@@ -23,6 +32,7 @@ def read_data(filename):
     """
 
     return pd.read_csv(filename)
+
 
 def cross_validation(estimator, x_train, y_train, score_type, k_folds, num_cpus):
     """
@@ -61,6 +71,7 @@ def cross_validation(estimator, x_train, y_train, score_type, k_folds, num_cpus)
     estimator_std = score.std()
 
     return estimator_score, estimator_std
+
 
 def grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test, num_cpus=-1, k_folds=10,
                                  score_type='accuracy'):
@@ -158,7 +169,7 @@ def plot_roc_curve(estimators, pred_prob, y_test):
         auc_score = roc_auc_score(y_test, pred_prob[i][:, 1])
         print(esti + ': ' + '{:.2f}'.format(auc_score))
         # plot roc curves
-        plt.plot(fpr, tpr, color=colors[i], label=esti+' (AUC='+'{:.2f}'.format(auc_score)+')')
+        plt.plot(fpr, tpr, color=colors[i], label=esti + ' (AUC=' + '{:.2f}'.format(auc_score) + ')')
 
     # roc curve for tpr = fpr
     random_probs = [0 for i in range(len(y_test))]
@@ -196,6 +207,7 @@ def plot_evaluation_accuracy(estimators, acc):
     plt.savefig('../../figures/evaluation.png')
     plt.clf()
 
+
 # =============================================================================#
 #                                      MAIN                                    #
 # =============================================================================#
@@ -204,28 +216,27 @@ def plot_evaluation_accuracy(estimators, acc):
 dataset = read_data('../../data/dataset.csv')
 
 # drop outliers
-#dataset = dataset.drop(dataset[~(np.abs(stats.zscore(dataset)) < 3).all(axis=1)].index)
+dataset = dataset.drop(dataset[~(np.abs(stats.zscore(dataset)) < 3).all(axis=1)].index)
 
 # get data (X) and labels (Y)
 X = dataset.drop('target', axis=1)
 Y = dataset.target
 
 # normalize data
-#X = (X - np.min(X)) / (np.max(X) - np.min(X)).values
+X = (X - np.min(X)) / (np.max(X) - np.min(X)).values
 
 # split to train (80%) and test (20%) set
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=32, stratify=Y)
 
 # create list with all possible parameters for each estimator
-"""
-clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1 ,2, 3, 4],
-                                                           'penalty': ['none', 'l1', 'l2', 'elasticnet'],
-                                                           'solver': ['newton-cg', 'lbfgs', 'liblinear'],
-                                                           'max_iter': [100, 300, 500, 600, 700, 800, 900, 1000]}),
+clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1, 2, 3, 4],
+                                                          'penalty': ['none', 'l1', 'l2', 'elasticnet'],
+                                                          'solver': ['newton-cg', 'lbfgs', 'liblinear'],
+                                                          'max_iter': [100, 300, 500, 600, 700, 800, 900, 1000]}),
             ('kNN', KNeighborsClassifier(), {'n_neighbors': np.arange(1, 30),
-                                              'weights': ['uniform', 'distance'],
-                                              'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
-                                              'metric': ['euclidean', 'minkowski', 'manhattan']}),
+                                             'weights': ['uniform', 'distance'],
+                                             'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
+                                             'metric': ['euclidean', 'minkowski', 'manhattan']}),
             ('MLP', MLPClassifier(), {'hidden_layer_sizes': [(50, 50, 50), (50, 100, 50), (100,)],
                                       'activation': ['identity', 'logistic', 'tanh', 'relu'],
                                       'solver': ['lbfgs', 'sgd', 'adam'],
@@ -245,10 +256,8 @@ clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1 ,2, 3, 4],
             ('SVC', SVC(), {'probability': [True],
                             'C': [0.1, 1, 10, 100, 1000],
                             'gamma': ['scale', 'auto'],
-                            'kernel': ['linear', 'rbf', 'sigmoid']}),
-            ('GaussianNB', GaussianNB(), {})]
+                            'kernel': ['linear', 'rbf', 'sigmoid']})]
 """
-
 clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1], 'penalty': ['l2'], 'solver': ['lbfgs'],
                                                           'max_iter': [100]}),
             ('kNN', KNeighborsClassifier(), {'algorithm': ['auto'], 'metric': ['manhattan'], 'n_neighbors': [26],
@@ -261,13 +270,13 @@ clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1], 'penalty': [
             ('RandomForest', RandomForestClassifier(), {'n_estimators': [100], 'criterion': ['gini'],
                                                         'max_depth': [None], 'max_features': ['auto']}),
             ('SVC', SVC(), {'probability': [True], 'C': [10], 'gamma': ['scale'], 'kernel': ['linear']})]
-
+"""
 # run grid search and cross validation
 estimators, acc, pred_prob = grid_search_cross_validation(clf_list, x_train, y_train, x_test, y_test)
 
 # plot evaluation accuracy
 plot_evaluation_accuracy(estimators, acc)
-#plot roc curve
+# plot roc curve
 plot_roc_curve(estimators, pred_prob, y_test)
 
 # fit the model on training set on best algorithm
@@ -276,4 +285,3 @@ model.fit(x_train, y_train)
 # save the model to disk
 filename = '../../model/finalized_model.sav'
 pickle.dump(model, open(filename, 'wb'))
-
