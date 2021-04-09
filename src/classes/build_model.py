@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import pickle
+import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -26,6 +27,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 from tabulate import tabulate
+matplotlib.use('Agg')
 
 
 def read_data(filename):
@@ -303,7 +305,7 @@ x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_
 
 # create list with all possible parameters for each estimator
 clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1, 2, 3, 4],
-                                                          'penalty': ['l1', 'l2', 'elasticnet'],
+                                                          'penalty': ['l1', 'l2'],
                                                           'solver': ['newton-cg', 'lbfgs', 'liblinear'],
                                                           'max_iter': [100, 300, 500, 600, 700, 800, 900, 1000]}),
             ('kNN', KNeighborsClassifier(), {'n_neighbors': np.arange(1, 30),
@@ -328,6 +330,7 @@ clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1, 2, 3, 4],
                                                         'max_features': ['auto', 'sqrt', 'log2']}),
             ('GaussianNB', GaussianNB(), {})]
 """
+# best parameters
 clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1], 'penalty': ['l2'], 'solver': ['lbfgs'],
                                                           'max_iter': [100]}),
             ('kNN', KNeighborsClassifier(), {'algorithm': ['auto'], 'metric': ['manhattan'], 'n_neighbors': [26],
