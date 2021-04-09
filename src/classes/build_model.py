@@ -303,7 +303,7 @@ x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_
 
 # create list with all possible parameters for each estimator
 clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1, 2, 3, 4],
-                                                          'penalty': ['none', 'l1', 'l2', 'elasticnet'],
+                                                          'penalty': ['l1', 'l2', 'elasticnet'],
                                                           'solver': ['newton-cg', 'lbfgs', 'liblinear'],
                                                           'max_iter': [100, 300, 500, 600, 700, 800, 900, 1000]}),
             ('kNN', KNeighborsClassifier(), {'n_neighbors': np.arange(1, 30),
