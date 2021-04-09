@@ -1,8 +1,12 @@
+#######################################################################################################################
 # main.py
-#
 # This class creates a GUI for input data.
 #
-# Created by: Constandinos Demetriou, Mar 2021
+# Execution commands:
+# python main.py
+#
+# Created by: Constandinos Demetriou, 2021
+#######################################################################################################################
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap

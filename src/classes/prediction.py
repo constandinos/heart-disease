@@ -1,8 +1,11 @@
+#######################################################################################################################
 # prediction.py
-#
 # This class predicts if a patient has a heart disease.
 #
-# Created by: Constandinos Demetriou, Mar 2021
+# This class is called from main.py.
+#
+# Created by: Constandinos Demetriou, 2021
+#######################################################################################################################
 
 import pandas as pd
 import pickle
