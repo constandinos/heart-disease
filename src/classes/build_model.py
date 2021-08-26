@@ -25,6 +25,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from tabulate import tabulate
 matplotlib.use('Agg')
@@ -298,7 +299,8 @@ X = dataset.drop('target', axis=1)
 Y = dataset.target
 
 # normalize data
-# X = (X - np.min(X)) / (np.max(X) - np.min(X)).values
+# sc_X = StandardScaler()
+# X = sc_X.fit_transform(X)
 
 # split to train (80%) and test (20%) set
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=32, stratify=Y)
@@ -329,21 +331,7 @@ clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1, 2, 3, 4],
                                                         'max_depth': [None, 4, 50, 100, 200, 300],
                                                         'max_features': ['auto', 'sqrt', 'log2']}),
             ('GaussianNB', GaussianNB(), {})]
-"""
-# best parameters
-clf_list = [('LogisticRegression', LogisticRegression(), {'C': [1], 'penalty': ['l2'], 'solver': ['lbfgs'],
-                                                          'max_iter': [100]}),
-            ('kNN', KNeighborsClassifier(), {'algorithm': ['auto'], 'metric': ['manhattan'], 'n_neighbors': [26],
-                                             'weights': ['distance']}),
-            ('MLP', MLPClassifier(), {'activation': ['identity'], 'alpha': [0.0001], 'hidden_layer_sizes': [(100,)],
-                                      'learning_rate': ['constant'], 'max_iter': [300], 'solver': ['lbfgs']}),
-            ('DecisionTree', DecisionTreeClassifier(), {'criterion': ['entropy'], 'max_depth': [5],
-                                                        'max_features': ['auto'], 'min_samples_leaf': [9],
-                                                        'min_samples_split': [8], 'splitter': ['random']}),
-            ('RandomForest', RandomForestClassifier(), {'n_estimators': [100], 'criterion': ['gini'],
-                                                        'max_depth': [None], 'max_features': ['auto']}),
-            ('GaussianNB', GaussianNB(), {})]
-"""
+
 # grid search and cross validation
 model_names, best_estimators, best_parameters, kfold_accuracy, kfold_std = grid_search_cross_validation(clf_list,
                                                                                                         x_train,
@@ -367,11 +355,10 @@ print('\nEvaluation on test set')
 df = pd.DataFrame({'Model': model_names, 'Accuracy(%)': pred_accuracy, 'AUC(%)': auc_list})
 print(tabulate(df, headers='keys', showindex=False))
 
-"""
 # fit the model on training set on best algorithm
 model = LogisticRegression(C=1, penalty='l2', solver='lbfgs', max_iter=100)
 model.fit(x_train, y_train)
 # save the model to disk
 filename = '../../model/finalized_model.sav'
 pickle.dump(model, open(filename, 'wb'))
-"""
+
