@@ -1,10 +1,9 @@
-Predict heart disease
-=====================
+# Predict heart disease
 In this project, we implement a system that predicts if a patient has a heart disease.
 
-Preamble
---------
-Author: Constandinos Demetriou
+## Preamble
+
+Author: [Constandinos Demetriou](https://github.com/constandinos)
 
 Copyright (c) 2021
 
@@ -14,14 +13,12 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/
 
-Introduction
-------------
+## Introduction
 Over the past decade, heart disease, also known as cardiovascular disease, has remained the leading cause of death worldwide. An estimate from the World Health Organization is that more than 17.9 million deaths occur each year worldwide due to cardiovascular disease and of these deaths, 80% are due to coronary heart disease and stroke. Common risk factors are smoking, excessive alcohol and caffeine consumption, stress and lack of exercise along with other factors such as obesity, hypertension, high  cholesterol are predisposing factors for heart disease. Effective and timely medical diagnosis of heart disease plays a crucial role in preventing death.
 
 Machine learning is one of the fastest growing areas of AI. Machine learning algorithms can analyze a huge amount of data from various fields, one of the most important of which is the medical field. Using machine learning we can understand complex and non-linear correlations between various factors, reducing the error in the predicted results. By exploring huge data sets it is possible to extract hidden critical information for decision making. With the machine learning algorithms we can build models which we train with a set of data and after the models "learn" we can perform predictions on new data. In this work, we tested machine learning classification algorithms for predicting heart disease in patients.
 
-Data
-----
+## Data
 This database from [UCI Machine learning repository](https://archive.ics.uci.edu/ml/datasets/heart+disease) contains 76 attributes, but all published experiments refer to using a subset of 14 of them. In particular, the Cleveland database is the only one that has been used by ML researchers to this date. The "goal" field refers to the presence of heart disease in the patient. It is integer valued from 0 (no presence) to 4. Experiments with the Cleveland database have concentrated on simply attempting to distinguish presence (values 1,2,3,4) from absence (value 0).
 
 Attribute Information:
@@ -39,8 +36,7 @@ Attribute Information:
 1. number of major vessels (0-3) colored by flourosopy
 1. thal: 3 = normal; 6 = fixed defect; 7 = reversable defect
 
-Machine Learning Classifiers
-----------------------------
+## Machine Learning Classifiers
 * Logistic Regression
 * k-Nearest Neighbors (kNN)
 * Multilayer Perceptron (MLP)
@@ -48,14 +44,15 @@ Machine Learning Classifiers
 * Random Forest
 * Gaussian Naive Bayes
 
-Installation and Usage
-----------------------
+## Installation
 Make sure you have [python 3.8](https://www.python.org/downloads/release/python-380/)  installed in your system. 
 The following command clone the repository.
 ```bash
 git clone https://github.com/constandinos/heart-disease
 cd heart-disease
 ```
+
+## Usage
 
 ### Interface
 
